@@ -1,65 +1,218 @@
-import Image from "next/image";
+'use client';
+
+import { useCallback, useState } from 'react';
+import DropZone from '@/components/DropZone';
+import QualitySlider from '@/components/QualitySlider';
+import ImageCard from '@/components/ImageCard';
+import CompareView from '@/components/CompareView';
+import BatchActions from '@/components/BatchActions';
+import FeatureSection from '@/components/FeatureSection';
+import Footer from '@/components/Footer';
+import { ImageItem, DEFAULT_QUALITY, MAX_FILES } from '@/lib/types';
+import { compressImage, generateId, getOutputFormat } from '@/lib/compress';
 
 export default function Home() {
+  const [items, setItems] = useState<ImageItem[]>([]);
+  const [quality, setQuality] = useState(DEFAULT_QUALITY);
+  const [compareItem, setCompareItem] = useState<ImageItem | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
+
+  const handleFilesSelected = useCallback(
+    async (files: File[]) => {
+      const newItems: ImageItem[] = files.map((file) => ({
+        id: generateId(),
+        file,
+        originalUrl: URL.createObjectURL(file),
+        compressedUrl: '',
+        compressedBlob: new Blob(),
+        originalSize: file.size,
+        compressedSize: 0,
+        width: 0,
+        height: 0,
+        status: 'pending' as const,
+      }));
+
+      setItems((prev) => [...prev, ...newItems].slice(0, MAX_FILES));
+      setIsCompressing(true);
+
+      for (const item of newItems) {
+        try {
+          setItems((prev) =>
+            prev.map((i) => (i.id === item.id ? { ...i, status: 'compressing' as const } : i))
+          );
+
+          const outputFormat = getOutputFormat(item.file);
+          const result = await compressImage(item.file, {
+            quality,
+            outputFormat,
+          });
+
+          const compressedUrl = URL.createObjectURL(result.blob);
+
+          setItems((prev) =>
+            prev.map((i) =>
+              i.id === item.id
+                ? {
+                    ...i,
+                    status: 'done' as const,
+                    compressedUrl,
+                    compressedBlob: result.blob,
+                    compressedSize: result.blob.size,
+                    width: result.width,
+                    height: result.height,
+                  }
+                : i
+            )
+          );
+        } catch (err) {
+          setItems((prev) =>
+            prev.map((i) =>
+              i.id === item.id
+                ? { ...i, status: 'error' as const, error: String(err) }
+                : i
+            )
+          );
+        }
+      }
+
+      setIsCompressing(false);
+    },
+    [quality]
+  );
+
+  const handleRemove = useCallback((id: string) => {
+    setItems((prev) => {
+      const item = prev.find((i) => i.id === id);
+      if (item) {
+        URL.revokeObjectURL(item.originalUrl);
+        if (item.compressedUrl) URL.revokeObjectURL(item.compressedUrl);
+      }
+      return prev.filter((i) => i.id !== id);
+    });
+  }, []);
+
+  const handleClearAll = useCallback(() => {
+    items.forEach((item) => {
+      URL.revokeObjectURL(item.originalUrl);
+      if (item.compressedUrl) URL.revokeObjectURL(item.compressedUrl);
+    });
+    setItems([]);
+  }, [items]);
+
+  const handleRecompress = useCallback(
+    async (newQuality: number) => {
+      const doneItems = items.filter((i) => i.status === 'done');
+      if (doneItems.length === 0) return;
+
+      setIsCompressing(true);
+
+      for (const item of doneItems) {
+        try {
+          setItems((prev) =>
+            prev.map((i) => (i.id === item.id ? { ...i, status: 'compressing' as const } : i))
+          );
+
+          const outputFormat = getOutputFormat(item.file);
+          const result = await compressImage(item.file, {
+            quality: newQuality,
+            outputFormat,
+          });
+
+          if (item.compressedUrl) URL.revokeObjectURL(item.compressedUrl);
+          const compressedUrl = URL.createObjectURL(result.blob);
+
+          setItems((prev) =>
+            prev.map((i) =>
+              i.id === item.id
+                ? {
+                    ...i,
+                    status: 'done' as const,
+                    compressedUrl,
+                    compressedBlob: result.blob,
+                    compressedSize: result.blob.size,
+                    width: result.width,
+                    height: result.height,
+                  }
+                : i
+            )
+          );
+        } catch (err) {
+          setItems((prev) =>
+            prev.map((i) =>
+              i.id === item.id
+                ? { ...i, status: 'error' as const, error: String(err) }
+                : i
+            )
+          );
+        }
+      }
+
+      setIsCompressing(false);
+    },
+    [items]
+  );
+
+  const handleQualityChange = useCallback(
+    (newQuality: number) => {
+      setQuality(newQuality);
+      if (items.length > 0) {
+        handleRecompress(newQuality);
+      }
+    },
+    [items.length, handleRecompress]
+  );
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-white">
+      <div className="max-w-5xl mx-auto px-4 py-12">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            免费在线图片压缩工具
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-gray-500 text-lg">
+            浏览器本地处理，保护您的隐私安全
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="mb-6">
+          <DropZone onFilesSelected={handleFilesSelected} disabled={isCompressing} />
         </div>
-      </main>
-    </div>
+
+        {items.length > 0 && (
+          <div className="mb-6">
+            <QualitySlider
+              quality={quality}
+              onChange={handleQualityChange}
+              disabled={isCompressing}
+            />
+          </div>
+        )}
+
+        {items.length > 0 && (
+          <div className="mb-6">
+            <BatchActions items={items} onClearAll={handleClearAll} />
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {items.map((item) => (
+            <ImageCard
+              key={item.id}
+              item={item}
+              onCompare={setCompareItem}
+              onRemove={handleRemove}
+            />
+          ))}
+        </div>
+      </div>
+
+      {items.length === 0 && <FeatureSection />}
+
+      {compareItem && compareItem.status === 'done' && (
+        <CompareView item={compareItem} onClose={() => setCompareItem(null)} />
+      )}
+
+      <Footer />
+    </main>
   );
 }
