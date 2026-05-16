@@ -1,0 +1,19 @@
+{
+  "name": "CompressPic - 免费在线图片处理工具",
+  "short_name": "CompressPic",
+  "description": "免费在线图片压缩、格式转换、裁剪、加水印、尺寸调整工具，浏览器本地处理保护隐私",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "any",
+  "lang": "zh-CN",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

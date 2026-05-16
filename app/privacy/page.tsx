@@ -4,6 +4,20 @@ import Footer from '@/components/Footer';
 export const metadata = {
   title: '隐私政策 - CompressPic',
   description: 'CompressPic 隐私政策：所有图片处理均在浏览器本地完成，我们不会收集、存储或上传您的任何图片。',
+  alternates: { canonical: 'https://compresspic.com/privacy' },
+  openGraph: {
+    title: '隐私政策 - CompressPic',
+    description: 'CompressPic 隐私政策：所有图片处理均在浏览器本地完成，保护您的隐私。',
+    url: 'https://compresspic.com/privacy',
+    siteName: 'CompressPic',
+    locale: 'zh_CN',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '隐私政策 - CompressPic',
+    description: '所有图片处理均在浏览器本地完成，保护您的隐私。',
+  },
 };
 
 export default function PrivacyPage() {

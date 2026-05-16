@@ -34,11 +34,53 @@ const faqs = [
     q: '为什么压缩后图片反而变大了？',
     a: '这通常发生在对已经高度压缩的图片再次压缩时。建议适当提高质量参数，或转换为 WebP 格式以获得更好的压缩效果。',
   },
+  {
+    q: '如何裁剪图片？',
+    a: '使用CompressPic裁剪工具，上传图片后输入裁剪区域或选择预设比例。',
+  },
+  {
+    q: '如何给图片加水印？',
+    a: '使用CompressPic水印工具，上传图片后输入水印文字，调整字体大小、颜色、透明度和位置。',
+  },
+  {
+    q: '批量压缩最多支持多少张图片？',
+    a: '批量压缩工具最多支持同时处理50张图片，压缩完成后可一键打包下载ZIP。',
+  },
+  {
+    q: '如何调整图片尺寸？',
+    a: '使用CompressPic尺寸调整工具，输入目标宽高或选择缩放比例，支持锁定宽高比。',
+  },
+  {
+    q: '图片转WebP后质量会下降吗？',
+    a: 'WebP在相同视觉质量下体积更小，设置80%以上质量几乎无视觉差异。',
+  },
+  {
+    q: '压缩后的图片可以恢复原状吗？',
+    a: '有损压缩不可逆，建议保留原图。您可以在压缩前调整质量参数以平衡体积和质量。',
+  },
+  {
+    q: 'CompressPic支持哪些浏览器？',
+    a: '支持所有现代浏览器，包括Chrome、Firefox、Safari、Edge等，推荐使用最新版Chrome获得最佳体验。',
+  },
 ];
 
 export const metadata = {
   title: '常见问题 - CompressPic',
   description: 'CompressPic 常见问题解答：图片压缩、格式转换、隐私安全等相关问题。',
+  alternates: { canonical: 'https://compresspic.com/faq' },
+  openGraph: {
+    title: '常见问题 - CompressPic',
+    description: 'CompressPic 常见问题解答：图片压缩、格式转换、隐私安全等相关问题。',
+    url: 'https://compresspic.com/faq',
+    siteName: 'CompressPic',
+    locale: 'zh_CN',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '常见问题 - CompressPic',
+    description: 'CompressPic 常见问题解答',
+  },
 };
 
 export default function FAQPage() {
