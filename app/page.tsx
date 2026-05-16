@@ -1,15 +1,44 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import Navbar from '@/components/Navbar';
 import DropZone from '@/components/DropZone';
 import QualitySlider from '@/components/QualitySlider';
 import ImageCard from '@/components/ImageCard';
 import CompareView from '@/components/CompareView';
 import BatchActions from '@/components/BatchActions';
+import ToolCard from '@/components/ToolCard';
+import HowItWorks from '@/components/HowItWorks';
+import ComparisonTable from '@/components/ComparisonTable';
 import FeatureSection from '@/components/FeatureSection';
 import Footer from '@/components/Footer';
 import { ImageItem, DEFAULT_QUALITY, MAX_FILES } from '@/lib/types';
 import { compressImage, generateId, getOutputFormat } from '@/lib/compress';
+
+const tools = [
+  {
+    href: '/#compress',
+    icon: (
+      <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+      </svg>
+    ),
+    title: '图片压缩',
+    description: '压缩 JPG/PNG/WebP 图片大小，最高可减小 80% 体积',
+    color: 'bg-blue-100',
+  },
+  {
+    href: '/convert',
+    icon: (
+      <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+      </svg>
+    ),
+    title: '格式转换',
+    description: '在 JPG、PNG、WebP 之间自由转换图片格式',
+    color: 'bg-purple-100',
+  },
+];
 
 export default function Home() {
   const [items, setItems] = useState<ImageItem[]>([]);
@@ -163,56 +192,70 @@ export default function Home() {
   );
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="max-w-5xl mx-auto px-4 py-12">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            免费在线图片压缩工具
-          </h1>
-          <p className="text-gray-500 text-lg">
-            浏览器本地处理，保护您的隐私安全
-          </p>
-        </div>
-
-        <div className="mb-6">
-          <DropZone onFilesSelected={handleFilesSelected} disabled={isCompressing} />
-        </div>
-
-        {items.length > 0 && (
-          <div className="mb-6">
-            <QualitySlider
-              quality={quality}
-              onChange={handleQualityChange}
-              disabled={isCompressing}
-            />
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-white">
+        <div className="max-w-5xl mx-auto px-4 py-12">
+          <div className="text-center mb-10">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+              免费在线图片处理工具
+            </h1>
+            <p className="text-gray-500 text-lg">
+              浏览器本地处理，保护您的隐私安全
+            </p>
           </div>
-        )}
 
-        {items.length > 0 && (
-          <div className="mb-6">
-            <BatchActions items={items} onClearAll={handleClearAll} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-16">
+            {tools.map((tool) => (
+              <ToolCard key={tool.href} {...tool} />
+            ))}
           </div>
-        )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((item) => (
-            <ImageCard
-              key={item.id}
-              item={item}
-              onCompare={setCompareItem}
-              onRemove={handleRemove}
-            />
-          ))}
+          <div id="compress">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">图片压缩</h2>
+
+            <div className="mb-6">
+              <DropZone onFilesSelected={handleFilesSelected} disabled={isCompressing} />
+            </div>
+
+            {items.length > 0 && (
+              <div className="mb-6">
+                <QualitySlider
+                  quality={quality}
+                  onChange={handleQualityChange}
+                  disabled={isCompressing}
+                />
+              </div>
+            )}
+
+            {items.length > 0 && (
+              <div className="mb-6">
+                <BatchActions items={items} onClearAll={handleClearAll} />
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {items.map((item) => (
+                <ImageCard
+                  key={item.id}
+                  item={item}
+                  onCompare={setCompareItem}
+                  onRemove={handleRemove}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
 
-      {items.length === 0 && <FeatureSection />}
+        <HowItWorks />
+        <ComparisonTable />
+        <FeatureSection />
 
-      {compareItem && compareItem.status === 'done' && (
-        <CompareView item={compareItem} onClose={() => setCompareItem(null)} />
-      )}
-
+        {compareItem && compareItem.status === 'done' && (
+          <CompareView item={compareItem} onClose={() => setCompareItem(null)} />
+        )}
+      </main>
       <Footer />
-    </main>
+    </>
   );
 }

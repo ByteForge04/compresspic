@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: '免费在线图片压缩工具 - CompressPic',
+  title: '免费在线图片处理工具 - CompressPic',
   description:
-    '免费在线压缩JPG/PNG/WebP图片，浏览器本地处理保护隐私，无需上传服务器，批量压缩一键下载。',
+    '免费在线图片压缩、格式转换工具，浏览器本地处理保护隐私，无需上传服务器，批量处理一键下载。',
   keywords: [
     '图片压缩',
     '在线图片压缩',
@@ -15,11 +15,15 @@ export const metadata: Metadata = {
     'WebP压缩',
     '批量压缩图片',
     '免费图片压缩',
+    '图片格式转换',
+    'JPG转PNG',
+    'PNG转WebP',
+    'WebP转换',
   ],
   openGraph: {
-    title: '免费在线图片压缩工具 - CompressPic',
+    title: '免费在线图片处理工具 - CompressPic',
     description:
-      '免费在线压缩JPG/PNG/WebP图片，浏览器本地处理保护隐私，无需上传服务器，批量压缩一键下载。',
+      '免费在线图片压缩、格式转换工具，浏览器本地处理保护隐私，无需上传服务器，批量处理一键下载。',
     url: 'https://compresspic.com',
     siteName: 'CompressPic',
     locale: 'zh_CN',
@@ -27,9 +31,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '免费在线图片压缩工具 - CompressPic',
+    title: '免费在线图片处理工具 - CompressPic',
     description:
-      '免费在线压缩JPG/PNG/WebP图片，浏览器本地处理保护隐私，无需上传服务器，批量压缩一键下载。',
+      '免费在线图片压缩、格式转换工具，浏览器本地处理保护隐私，无需上传服务器，批量处理一键下载。',
   },
   robots: {
     index: true,
