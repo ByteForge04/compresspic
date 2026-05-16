@@ -1,6 +1,6 @@
 // lib/compress.ts
 
-import { CompressOptions, ImageItem } from './types';
+import { CompressOptions } from './types';
 
 export function compressImage(
   file: File,

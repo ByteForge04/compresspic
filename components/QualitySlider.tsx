@@ -1,7 +1,5 @@
 'use client';
 
-import { DEFAULT_QUALITY } from '@/lib/types';
-
 interface QualitySliderProps {
   quality: number;
   onChange: (quality: number) => void;
